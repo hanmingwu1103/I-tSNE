@@ -1,0 +1,32 @@
+Package: itsne
+Title: Interval t-SNE for Interval-Valued Data
+Version: 0.0.0.9000
+Authors@R: c(
+    person(
+      given = "Han-Ming",
+      family = "Wu",
+      role = c("aut", "cre"),
+      email = "hanmingwu1103@gmail.com"
+    )
+  )
+Description: Provides interval-valued extensions of t-SNE together with
+    baseline interval dimension-reduction methods, interval-aware LCMC
+    evaluation tools, visualization helpers, and reproducible workflows for
+    the simulation studies and real-data analyses in the accompanying
+    manuscript.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports:
+    ggplot2,
+    mvtnorm,
+    patchwork,
+    RColorBrewer,
+    readr,
+    Rtsne,
+    scales
+Suggests:
+    mdsOpt,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

@@ -1,0 +1,4 @@
+^legacy$
+^README\.md$
+^\.gitignore$
+^\.local-lib$
