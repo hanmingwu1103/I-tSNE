@@ -7,8 +7,7 @@ repository is named `itsne`, because R package names cannot contain hyphens.
 ## What the package includes
 
 - Interval-data standardization helpers
-- Interval-valued baseline methods: `IPCA(VM)`, `IPCA(QM)`, `IPCA(CR)`, and
-  `IMDS`
+- Interval-valued baseline methods: `IPCA(VM)`, `IPCA(QM)`, and `IPCA(CR)`
 - Four interval-valued t-SNE variants:
   `I-tSNE(VM)`, `I-tSNE(QM)`, `I-tSNE(MM)`, and `I-tSNE(CR)`
 - Modified-LCMC utilities for interval-valued data
@@ -17,9 +16,17 @@ repository is named `itsne`, because R package names cannot contain hyphens.
 
 ## Install locally
 
+From GitHub:
+
 ```r
-install.packages("devtools")
-devtools::install("I-tSNE")
+install.packages("remotes")
+remotes::install_github("hanmingwu1103/I-tSNE")
+```
+
+After CRAN release:
+
+```r
+install.packages("itsne")
 ```
 
 ## Example

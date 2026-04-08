@@ -1,6 +1,6 @@
 Package: itsne
 Title: Interval t-SNE for Interval-Valued Data
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: c(
     person(
       given = "Han-Ming",
@@ -28,10 +28,11 @@ Imports:
     scales
 Suggests:
     knitr,
-    mdsOpt,
     pkgdown,
     rmarkdown,
     testthat (>= 3.0.0)
+URL: https://github.com/hanmingwu1103/I-tSNE
+BugReports: https://github.com/hanmingwu1103/I-tSNE/issues
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Config/Needs/website: pkgdown

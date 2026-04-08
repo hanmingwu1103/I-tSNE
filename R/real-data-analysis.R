@@ -28,14 +28,11 @@ run_real_data_analysis <- function(output_dir = "results/real-data") {
   face_raw <- read_example_data("facedata.csv")
   face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
   face_data <- standardize_interval_data(face_data, id_col = "species", method = 1)
-  face_include_imds <- requireNamespace("mdsOpt", quietly = TRUE)
 
   face_settings <- list(
-    include_imds = face_include_imds,
     ipca_vm = list(dims = 2),
     ipca_qm = list(m = 5, dims = 2),
     ipca_cr = list(dims = 2),
-    imds = list(dims = 2, seed = 12345),
     itsne_vm = list(perplexity = 50, eta = 200),
     itsne_qm = list(m = 5, perplexity = 50, eta = 200),
     itsne_mm = list(perplexity = 5, alpha = 0.5, penalty_lambda = 0.07, learning_rate = 5, initial_P_gain = 4),
@@ -68,14 +65,11 @@ run_real_data_analysis <- function(output_dir = "results/real-data") {
   digits_vm <- digits_vm_raw[, c("label", grep("_(Lower|Upper)$", names(digits_vm_raw), value = TRUE))]
   digits_main <- standardize_interval_data(digits_main, id_col = "label", method = 3)
   digits_vm <- standardize_interval_data(digits_vm, id_col = "label", method = 3)
-  digits_include_imds <- requireNamespace("mdsOpt", quietly = TRUE)
 
   digits_settings <- list(
-    include_imds = digits_include_imds,
     ipca_vm = list(dims = 2),
     ipca_qm = list(m = 5, dims = 2),
     ipca_cr = list(dims = 2),
-    imds = list(dims = 2, seed = 12345),
     itsne_vm = list(perplexity = 400, eta = 200),
     itsne_qm = list(m = 5, perplexity = 100, eta = 200),
     itsne_mm = list(perplexity = 30, alpha = 0.5, penalty_lambda = 1.8, learning_rate = 5, initial_P_gain = 4),

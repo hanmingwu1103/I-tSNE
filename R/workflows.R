@@ -14,11 +14,6 @@ run_method_suite <- function(data, id_col, settings, include_baselines = FALSE, 
         ipca_qm = do.call(ipca_qm, c(list(interval_data = data, id_col = id_col), settings$ipca_qm)),
         ipca_cr = do.call(ipca_cr, c(list(interval_data = data, id_col = id_col), settings$ipca_cr))
       ),
-      if (isTRUE(settings$include_imds)) {
-        list(imds = do.call(imds_box, c(list(interval_data = data, id_col = id_col), settings$imds)))
-      } else {
-        list()
-      },
       results
     )
   }
@@ -179,3 +174,4 @@ run_simulation_studies <- function(output_dir = "results/simulations", seed = 12
 
   results
 }
+

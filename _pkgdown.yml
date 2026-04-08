@@ -18,7 +18,6 @@ reference:
       - ipca_vm
       - ipca_qm
       - ipca_cr
-      - imds_box
 
   - title: Evaluation and plotting
     contents:

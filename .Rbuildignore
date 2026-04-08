@@ -2,3 +2,7 @@
 ^README\.md$
 ^\.gitignore$
 ^\.local-lib$
+^LICENSE\.md$
+^_pkgdown\.yml$
+^cran-comments\.md$
+^CRAN_SUBMISSION_CHECKLIST\.md$

@@ -150,7 +150,6 @@ default_method_name_map <- function() {
     ipca_vm = "IPCA(VM)",
     ipca_qm = "IPCA(QM)",
     ipca_cr = "IPCA(CR)",
-    imds = "IMDS",
     itsne_vm = "I-tSNE(VM)",
     itsne_qm = "I-tSNE(QM)",
     itsne_mm = "I-tSNE(MM)",
