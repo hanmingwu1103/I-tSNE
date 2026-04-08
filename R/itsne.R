@@ -1,16 +1,35 @@
 #' I-tSNE with vertex expansion
 #'
-#' @param interval_data A data frame with paired interval columns.
-#' @param id_col Identifier or grouping column.
+#' Embed interval-valued observations by expanding each interval to its full set of
+#' vertices, applying t-SNE to the resulting point cloud, and reconstructing a
+#' reduced-space interval from the coordinatewise minima and maxima of the
+#' embedded vertices.
+#'
+#' @param interval_data A data frame with paired interval columns ending in
+#'   `_Lower` and `_Upper`.
+#' @param id_col Optional identifier or grouping column preserved in the output.
 #' @param dims Number of reduced dimensions.
-#' @param perplexity t-SNE perplexity.
-#' @param theta Barnes-Hut approximation parameter.
-#' @param normalize Whether to normalize the expanded point cloud.
+#' @param perplexity t-SNE perplexity applied to the expanded point cloud.
+#' @param theta Barnes-Hut approximation parameter passed to [Rtsne::Rtsne()].
+#' @param normalize Whether to normalize the expanded point cloud before fitting
+#'   t-SNE.
 #' @param max_iter Number of optimization iterations.
-#' @param eta Learning rate.
+#' @param eta Learning rate passed to t-SNE.
 #' @param seed Random seed.
 #'
-#' @return A reduced-space interval data frame.
+#' @return A reduced-space interval data frame with one row per input observation.
+#'
+#' @examples
+#' if (interactive()) {
+#'   sim <- simulate_direct_intervals(
+#'     cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+#'     n_per_cluster = 4,
+#'     noise_dims = 0,
+#'     seed = 1
+#'   )
+#'   fit <- itsne_vm(sim, id_col = "Group", perplexity = 5, max_iter = 250, eta = 100)
+#'   head(fit)
+#' }
 #' @export
 itsne_vm <- function(
     interval_data,
@@ -62,17 +81,35 @@ itsne_vm <- function(
 
 #' I-tSNE with quantile expansion
 #'
-#' @param interval_data A data frame with paired interval columns.
-#' @param id_col Identifier or grouping column.
-#' @param m Number of quantile segments.
+#' Embed interval-valued observations by replacing each interval with a finite set
+#' of equally spaced representative points, fitting t-SNE to the expanded point
+#' cloud, and reconstructing a reduced-space interval from the embedded
+#' representatives.
+#'
+#' @param interval_data A data frame with paired interval columns ending in
+#'   `_Lower` and `_Upper`.
+#' @param id_col Optional identifier or grouping column preserved in the output.
+#' @param m Number of quantile segments used to discretize each interval.
 #' @param dims Number of reduced dimensions.
-#' @param theta Barnes-Hut approximation parameter.
-#' @param perplexity t-SNE perplexity.
-#' @param eta Learning rate.
+#' @param theta Barnes-Hut approximation parameter passed to [Rtsne::Rtsne()].
+#' @param perplexity t-SNE perplexity applied to the expanded point cloud.
+#' @param eta Learning rate passed to t-SNE.
 #' @param max_iter Number of optimization iterations.
 #' @param seed Random seed.
 #'
-#' @return A reduced-space interval data frame.
+#' @return A reduced-space interval data frame with one row per input observation.
+#'
+#' @examples
+#' if (interactive()) {
+#'   sim <- simulate_direct_intervals(
+#'     cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+#'     n_per_cluster = 4,
+#'     noise_dims = 0,
+#'     seed = 1
+#'   )
+#'   fit <- itsne_qm(sim, id_col = "Group", m = 4, perplexity = 10, max_iter = 250, eta = 100)
+#'   head(fit)
+#' }
 #' @export
 itsne_qm <- function(
     interval_data,
@@ -131,25 +168,45 @@ itsne_qm <- function(
 
 #' I-tSNE with endpoint optimization and penalty control
 #'
-#' @param interval_data A data frame with paired interval columns.
-#' @param id_col Identifier or grouping column.
+#' Fit the direct endpoint-based I-tSNE(MM) formulation by optimizing reduced-space
+#' lower and upper endpoints under a t-SNE objective augmented with a soft penalty
+#' that discourages endpoint inversion.
+#'
+#' @param interval_data A data frame with paired interval columns ending in
+#'   `_Lower` and `_Upper`.
+#' @param id_col Optional identifier or grouping column preserved in the output.
 #' @param dims Number of reduced dimensions.
 #' @param perplexity t-SNE perplexity for both endpoint channels.
-#' @param alpha The MM mixing weight.
-#' @param learning_rate Learning rate.
+#' @param alpha MM mixing weight controlling the relative contribution of the
+#'   lower-endpoint and upper-endpoint losses.
+#' @param learning_rate Gradient-descent learning rate.
 #' @param max_iter Number of optimization iterations.
-#' @param initial_P_gain Early exaggeration multiplier for the MM probability matrices.
+#' @param initial_P_gain Early-exaggeration multiplier applied to the MM
+#'   probability matrices.
 #' @param momentum Initial momentum.
 #' @param final_momentum Final momentum after `mom_switch_iter`.
 #' @param mom_switch_iter Iteration at which to switch the momentum.
-#' @param penalty_lambda The MM penalty weight.
+#' @param penalty_lambda MM penalty weight used to discourage endpoint inversion.
 #' @param seed Random seed.
-#' @param verbose Whether to print progress.
+#' @param verbose Whether to print progress information.
 #' @param init_a Optional initial lower-endpoint matrix.
 #' @param init_b Optional initial upper-endpoint matrix.
 #' @param init_gap Default positive gap used when only `init_a` is supplied.
 #'
-#' @return A list with `embedding` and `loss_history`.
+#' @return A list with two components: `embedding`, the reduced-space interval
+#'   data frame, and `loss_history`, the objective value at each iteration.
+#'
+#' @examples
+#' if (interactive()) {
+#'   sim <- simulate_direct_intervals(
+#'     cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+#'     n_per_cluster = 4,
+#'     noise_dims = 0,
+#'     seed = 1
+#'   )
+#'   fit <- itsne_mm(sim, id_col = "Group", perplexity = 3, max_iter = 200, verbose = FALSE)
+#'   head(fit$embedding)
+#' }
 #' @export
 itsne_mm <- function(
     interval_data,
@@ -282,30 +339,50 @@ itsne_mm <- function(
 
 #' I-tSNE with center-radius optimization
 #'
-#' @param interval_data A data frame with paired interval columns.
-#' @param id_col Identifier or grouping column.
+#' Fit the direct center-radius I-tSNE(CR) formulation by modeling each interval
+#' through reduced-space centers and radii and optimizing a t-SNE objective built
+#' from a Wasserstein-style interval distance.
+#'
+#' @param interval_data A data frame with paired interval columns ending in
+#'   `_Lower` and `_Upper`.
+#' @param id_col Optional identifier or grouping column preserved in the output.
 #' @param dims Number of reduced dimensions.
 #' @param perplexity t-SNE perplexity.
-#' @param lambda The CR Wasserstein weight.
+#' @param lambda CR Wasserstein weight controlling the contribution of radius
+#'   differences in the reduced-space distance.
 #' @param eta Learning rate.
 #' @param max_iter Number of optimization iterations.
-#' @param EE Early exaggeration multiplier.
+#' @param EE Early-exaggeration multiplier.
 #' @param T_EE Number of early-exaggeration iterations.
 #' @param momentum Initial momentum.
 #' @param final_momentum Final momentum after `mom_switch_iter`.
 #' @param mom_switch_iter Iteration at which to switch momentum.
-#' @param tol Binary-search tolerance in the CR probability construction.
+#' @param tol Binary-search tolerance used in the CR probability construction.
 #' @param beta_max_iter Maximum number of binary-search iterations.
-#' @param alpha The CR softplus scale.
+#' @param alpha CR softplus scale used to map unconstrained parameters to positive
+#'   radii.
 #' @param seed Random seed.
-#' @param verbose Whether to print progress.
+#' @param verbose Whether to print progress information.
 #' @param init_C Optional initial center matrix.
 #' @param init_S Optional initial unconstrained radius-parameter matrix.
 #' @param init_r Optional initial radii.
 #' @param init_inc_C Optional initial center increments.
 #' @param init_inc_S Optional initial unconstrained-radius increments.
 #'
-#' @return A list with `embedding` and `loss_history`.
+#' @return A list with two components: `embedding`, the reduced-space interval
+#'   data frame, and `loss_history`, the objective value at each iteration.
+#'
+#' @examples
+#' if (interactive()) {
+#'   sim <- simulate_direct_intervals(
+#'     cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+#'     n_per_cluster = 4,
+#'     noise_dims = 0,
+#'     seed = 1
+#'   )
+#'   fit <- itsne_cr(sim, id_col = "Group", perplexity = 3, max_iter = 200, verbose = FALSE)
+#'   head(fit$embedding)
+#' }
 #' @export
 itsne_cr <- function(
     interval_data,
@@ -410,7 +487,7 @@ itsne_cr <- function(
     s_mat <- as.matrix(init_S)
   }
 
-  if (!identical(dim(c_prime), c(n, d)) || !identical(dim(s_mat), c(n, d))) {
+  if (!all(dim(c_prime) == c(n, d)) || !all(dim(s_mat) == c(n, d))) {
     stop("Initial CR matrices must have shape n x dims.", call. = FALSE)
   }
 

@@ -1,11 +1,27 @@
 #' Compute an interval-valued distance matrix
 #'
-#' @param interval_data A data frame with paired interval columns.
-#' @param metric One of `"wasserstein"`, `"hausdorff"`, or `"ichino_yaguchi"`.
-#' @param gamma Tuning constant in the Ichino-Yaguchi distance.
+#' Compute a pairwise distance matrix for interval-valued observations using one
+#' of the three interval distances employed in the manuscript: Hausdorff,
+#' Wasserstein, or Ichino-Yaguchi.
+#'
+#' @param interval_data A data frame with paired interval columns ending in
+#'   `_Lower` and `_Upper`.
+#' @param metric One of `"wasserstein"`, `"hausdorff"`, or
+#'   `"ichino_yaguchi"`.
+#' @param gamma Tuning constant used in the Ichino-Yaguchi distance.
 #' @param lambda Radius weight used in the Wasserstein distance.
 #'
-#' @return A symmetric distance matrix.
+#' @return A symmetric numeric distance matrix.
+#'
+#' @examples
+#' sim <- simulate_direct_intervals(
+#'   cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+#'   n_per_cluster = 2,
+#'   noise_dims = 0,
+#'   seed = 1
+#' )
+#' dist_mat <- interval_distance_matrix(sim, metric = "wasserstein")
+#' dist_mat[1:3, 1:3]
 #' @export
 interval_distance_matrix <- function(
     interval_data,
@@ -109,13 +125,33 @@ extract_reduced_interval_bounds <- function(low_df) {
 
 #' Compute modified-LCMC summaries for interval-valued embeddings
 #'
+#' Compare original-space neighborhoods with reduced-space neighborhoods for one or
+#' more interval embeddings using the modified Local Continuity Meta-Criterion
+#' (LCMC) described in the manuscript.
+#'
 #' @param high_data Original interval-valued observations.
 #' @param methods_list Named list of reduced-space interval outputs.
-#' @param k_range Neighborhood sizes to evaluate.
-#' @param gamma Tuning constant in the Ichino-Yaguchi distance.
+#' @param k_range Neighborhood sizes to evaluate. If `NULL`, all values from 1 to
+#'   `n - 1` are used.
+#' @param gamma Tuning constant used in the Ichino-Yaguchi distance.
 #' @param lambda Radius weight used in the Wasserstein distance.
 #'
-#' @return A named list with one data frame per distance metric.
+#' @return A named list of data frames, with one entry per interval distance.
+#'
+#' @examples
+#' sim <- simulate_point_aggregation(
+#'   cluster_centers = matrix(c(6, 0, -6, 0, 0, 6), ncol = 2, byrow = TRUE),
+#'   n_per_cluster = 30,
+#'   k = 2,
+#'   noise_dims = 0,
+#'   seed = 1
+#' )
+#' methods <- list(
+#'   ipca_qm = ipca_qm(sim, id_col = "Group", m = 3, dims = 2),
+#'   ipca_cr = ipca_cr(sim, id_col = "Group", dims = 2)
+#' )
+#' lcmc <- compute_lcmc_tables(sim, methods, k_range = 1:3)
+#' names(lcmc)
 #' @export
 compute_lcmc_tables <- function(
     high_data,
@@ -166,12 +202,31 @@ compute_lcmc_tables <- function(
 
 #' Plot modified-LCMC curves
 #'
-#' @param lcmc_tables Output of compute_lcmc_tables().
-#' @param method_name_map Optional named character vector for legend labels.
+#' Assemble one or more modified-LCMC result tables into a faceted line plot for
+#' visual comparison across methods and interval distances.
+#'
+#' @param lcmc_tables Output of [compute_lcmc_tables()].
+#' @param method_name_map Optional named character vector used to relabel methods
+#'   in the plot legend.
 #' @param palette Optional named vector of colors.
 #' @param nrow Number of facet rows.
 #'
 #' @return A ggplot object.
+#'
+#' @examples
+#' sim <- simulate_point_aggregation(
+#'   cluster_centers = matrix(c(6, 0, -6, 0, 0, 6), ncol = 2, byrow = TRUE),
+#'   n_per_cluster = 30,
+#'   k = 2,
+#'   noise_dims = 0,
+#'   seed = 1
+#' )
+#' methods <- list(
+#'   ipca_qm = ipca_qm(sim, id_col = "Group", m = 3, dims = 2),
+#'   ipca_cr = ipca_cr(sim, id_col = "Group", dims = 2)
+#' )
+#' lcmc <- compute_lcmc_tables(sim, methods, k_range = 1:3)
+#' plot_lcmc_grid(lcmc)
 #' @export
 plot_lcmc_grid <- function(lcmc_tables, method_name_map = NULL, palette = NULL, nrow = 1) {
   all_df <- do.call(rbind, lcmc_tables)

@@ -12,17 +12,31 @@ interval_distance_matrix(
 )
 }
 \arguments{
-\item{interval_data}{A data frame with paired interval columns.}
+\item{interval_data}{A data frame with paired interval columns ending in
+\verb{_Lower} and \verb{_Upper}.}
 
-\item{metric}{One of \code{"wasserstein"}, \code{"hausdorff"}, or \code{"ichino_yaguchi"}.}
+\item{metric}{One of \code{"wasserstein"}, \code{"hausdorff"}, or
+\code{"ichino_yaguchi"}.}
 
-\item{gamma}{Tuning constant in the Ichino-Yaguchi distance.}
+\item{gamma}{Tuning constant used in the Ichino-Yaguchi distance.}
 
 \item{lambda}{Radius weight used in the Wasserstein distance.}
 }
 \value{
-A symmetric distance matrix.
+A symmetric numeric distance matrix.
 }
 \description{
-Compute an interval-valued distance matrix
+Compute a pairwise distance matrix for interval-valued observations using one
+of the three interval distances employed in the manuscript: Hausdorff,
+Wasserstein, or Ichino-Yaguchi.
+}
+\examples{
+sim <- simulate_direct_intervals(
+  cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+  n_per_cluster = 2,
+  noise_dims = 0,
+  seed = 1
+)
+dist_mat <- interval_distance_matrix(sim, metric = "wasserstein")
+dist_mat[1:3, 1:3]
 }

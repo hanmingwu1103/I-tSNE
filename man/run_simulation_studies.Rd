@@ -9,11 +9,21 @@ run_simulation_studies(output_dir = "results/simulations", seed = 12345)
 \arguments{
 \item{output_dir}{Directory where results and figures will be saved.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed. Included for interface consistency; the scenario
+generators currently manage their own seeds.}
 }
 \value{
-A nested list containing simulated datasets, method outputs, and LCMC tables.
+A named list containing the simulated datasets, fitted method outputs,
+and modified-LCMC tables for each simulation setting.
 }
 \description{
-Run the manuscript simulation study
+Reproduce the manuscript simulation workflows, including interval-data
+generation, model fitting, modified-LCMC evaluation, and figure and table
+export.
+}
+\examples{
+if (interactive()) {
+  out <- run_simulation_studies(output_dir = tempdir())
+  names(out)
+}
 }

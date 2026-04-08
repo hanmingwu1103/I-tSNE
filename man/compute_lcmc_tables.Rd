@@ -17,15 +17,33 @@ compute_lcmc_tables(
 
 \item{methods_list}{Named list of reduced-space interval outputs.}
 
-\item{k_range}{Neighborhood sizes to evaluate.}
+\item{k_range}{Neighborhood sizes to evaluate. If \code{NULL}, all values from 1 to
+\code{n - 1} are used.}
 
-\item{gamma}{Tuning constant in the Ichino-Yaguchi distance.}
+\item{gamma}{Tuning constant used in the Ichino-Yaguchi distance.}
 
 \item{lambda}{Radius weight used in the Wasserstein distance.}
 }
 \value{
-A named list with one data frame per distance metric.
+A named list of data frames, with one entry per interval distance.
 }
 \description{
-Compute modified-LCMC summaries for interval-valued embeddings
+Compare original-space neighborhoods with reduced-space neighborhoods for one or
+more interval embeddings using the modified Local Continuity Meta-Criterion
+(LCMC) described in the manuscript.
+}
+\examples{
+sim <- simulate_point_aggregation(
+  cluster_centers = matrix(c(6, 0, -6, 0, 0, 6), ncol = 2, byrow = TRUE),
+  n_per_cluster = 30,
+  k = 2,
+  noise_dims = 0,
+  seed = 1
+)
+methods <- list(
+  ipca_qm = ipca_qm(sim, id_col = "Group", m = 3, dims = 2),
+  ipca_cr = ipca_cr(sim, id_col = "Group", dims = 2)
+)
+lcmc <- compute_lcmc_tables(sim, methods, k_range = 1:3)
+names(lcmc)
 }

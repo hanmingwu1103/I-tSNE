@@ -14,7 +14,8 @@ plot_interval_projection(
 )
 }
 \arguments{
-\item{data}{A reduced-space interval data frame.}
+\item{data}{A reduced-space interval data frame containing a \code{Group} column and
+the interval bounds for the first two reduced dimensions.}
 
 \item{title}{Plot title.}
 
@@ -30,5 +31,13 @@ plot_interval_projection(
 A ggplot object.
 }
 \description{
-Plot reduced-space interval rectangles
+Create a two-dimensional rectangle plot for reduced-space interval outputs.
+}
+\examples{
+face_path <- system.file("extdata", "facedata.csv", package = "itsne")
+face_raw <- readr::read_csv(face_path, show_col_types = FALSE)
+face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
+face_std <- standardize_interval_data(face_data, id_col = "species", method = 1)
+fit <- ipca_qm(face_std, id_col = "species", m = 5, dims = 2)
+plot_interval_projection(fit, title = "Face data: IPCA(QM)")
 }

@@ -18,17 +18,19 @@ simulate_direct_intervals(
 )
 }
 \arguments{
-\item{cluster_centers}{A matrix with one row per cluster and two signal coordinates.}
+\item{cluster_centers}{A matrix with one row per cluster and two signal
+coordinates.}
 
 \item{n_per_cluster}{Number of interval observations per cluster.}
 
-\item{signal_center_sd}{Standard deviation for signal-space center perturbations.}
+\item{signal_center_sd}{Standard deviation for signal-space center
+perturbations.}
 
 \item{signal_radius_mean}{Mean signal-space radius.}
 
 \item{signal_radius_sd}{Standard deviation of signal-space radii.}
 
-\item{noise_dims}{Number of noise dimensions.}
+\item{noise_dims}{Number of additional noise dimensions.}
 
 \item{noise_center_sd}{Standard deviation for noise-dimension centers.}
 
@@ -42,5 +44,16 @@ simulate_direct_intervals(
 A data frame of interval-valued observations.
 }
 \description{
-Simulate interval data directly from centers and radii
+Generate interval-valued observations directly by sampling interval centers and
+nonnegative radii in the signal dimensions, optionally augmented with noise
+dimensions generated in the same way.
+}
+\examples{
+sim <- simulate_direct_intervals(
+  cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+  n_per_cluster = 2,
+  noise_dims = 1,
+  seed = 1
+)
+dim(sim)
 }

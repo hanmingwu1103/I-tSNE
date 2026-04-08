@@ -14,13 +14,15 @@ simulate_point_aggregation(
 )
 }
 \arguments{
-\item{cluster_centers}{A matrix with one row per cluster and two signal coordinates.}
+\item{cluster_centers}{A matrix with one row per cluster and two signal
+coordinates.}
 
-\item{n_per_cluster}{Number of point observations per cluster before aggregation.}
+\item{n_per_cluster}{Number of point observations per cluster before
+aggregation.}
 
 \item{k}{Number of interval groups formed within each cluster.}
 
-\item{noise_dims}{Number of noise dimensions.}
+\item{noise_dims}{Number of additional noise dimensions.}
 
 \item{covariance}{Covariance matrix for the signal-space Gaussian sampling.}
 
@@ -30,5 +32,17 @@ simulate_point_aggregation(
 A data frame of interval-valued observations.
 }
 \description{
-Simulate interval data by point aggregation
+Generate interval-valued observations by first sampling point-valued data,
+grouping the points within each cluster, and then forming interval endpoints
+from coordinatewise minima and maxima.
+}
+\examples{
+sim <- simulate_point_aggregation(
+  cluster_centers = matrix(c(6, 0, -6, 0, 0, 6), ncol = 2, byrow = TRUE),
+  n_per_cluster = 30,
+  k = 2,
+  noise_dims = 0,
+  seed = 1
+)
+dim(sim)
 }

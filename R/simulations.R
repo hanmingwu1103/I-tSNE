@@ -1,13 +1,29 @@
 #' Simulate interval data by point aggregation
 #'
-#' @param cluster_centers A matrix with one row per cluster and two signal coordinates.
-#' @param n_per_cluster Number of point observations per cluster before aggregation.
+#' Generate interval-valued observations by first sampling point-valued data,
+#' grouping the points within each cluster, and then forming interval endpoints
+#' from coordinatewise minima and maxima.
+#'
+#' @param cluster_centers A matrix with one row per cluster and two signal
+#'   coordinates.
+#' @param n_per_cluster Number of point observations per cluster before
+#'   aggregation.
 #' @param k Number of interval groups formed within each cluster.
-#' @param noise_dims Number of noise dimensions.
+#' @param noise_dims Number of additional noise dimensions.
 #' @param covariance Covariance matrix for the signal-space Gaussian sampling.
 #' @param seed Random seed.
 #'
 #' @return A data frame of interval-valued observations.
+#'
+#' @examples
+#' sim <- simulate_point_aggregation(
+#'   cluster_centers = matrix(c(6, 0, -6, 0, 0, 6), ncol = 2, byrow = TRUE),
+#'   n_per_cluster = 30,
+#'   k = 2,
+#'   noise_dims = 0,
+#'   seed = 1
+#' )
+#' dim(sim)
 #' @export
 simulate_point_aggregation <- function(
     cluster_centers,
@@ -69,18 +85,33 @@ simulate_point_aggregation <- function(
 
 #' Simulate interval data directly from centers and radii
 #'
-#' @param cluster_centers A matrix with one row per cluster and two signal coordinates.
+#' Generate interval-valued observations directly by sampling interval centers and
+#' nonnegative radii in the signal dimensions, optionally augmented with noise
+#' dimensions generated in the same way.
+#'
+#' @param cluster_centers A matrix with one row per cluster and two signal
+#'   coordinates.
 #' @param n_per_cluster Number of interval observations per cluster.
-#' @param signal_center_sd Standard deviation for signal-space center perturbations.
+#' @param signal_center_sd Standard deviation for signal-space center
+#'   perturbations.
 #' @param signal_radius_mean Mean signal-space radius.
 #' @param signal_radius_sd Standard deviation of signal-space radii.
-#' @param noise_dims Number of noise dimensions.
+#' @param noise_dims Number of additional noise dimensions.
 #' @param noise_center_sd Standard deviation for noise-dimension centers.
 #' @param noise_radius_mean Mean noise-dimension radius.
 #' @param noise_radius_sd Standard deviation of noise-dimension radii.
 #' @param seed Random seed.
 #'
 #' @return A data frame of interval-valued observations.
+#'
+#' @examples
+#' sim <- simulate_direct_intervals(
+#'   cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+#'   n_per_cluster = 2,
+#'   noise_dims = 1,
+#'   seed = 1
+#' )
+#' dim(sim)
 #' @export
 simulate_direct_intervals <- function(
     cluster_centers,

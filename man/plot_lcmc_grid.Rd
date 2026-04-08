@@ -7,9 +7,10 @@
 plot_lcmc_grid(lcmc_tables, method_name_map = NULL, palette = NULL, nrow = 1)
 }
 \arguments{
-\item{lcmc_tables}{Output of compute_lcmc_tables().}
+\item{lcmc_tables}{Output of \code{\link[=compute_lcmc_tables]{compute_lcmc_tables()}}.}
 
-\item{method_name_map}{Optional named character vector for legend labels.}
+\item{method_name_map}{Optional named character vector used to relabel methods
+in the plot legend.}
 
 \item{palette}{Optional named vector of colors.}
 
@@ -19,5 +20,21 @@ plot_lcmc_grid(lcmc_tables, method_name_map = NULL, palette = NULL, nrow = 1)
 A ggplot object.
 }
 \description{
-Plot modified-LCMC curves
+Assemble one or more modified-LCMC result tables into a faceted line plot for
+visual comparison across methods and interval distances.
+}
+\examples{
+sim <- simulate_point_aggregation(
+  cluster_centers = matrix(c(6, 0, -6, 0, 0, 6), ncol = 2, byrow = TRUE),
+  n_per_cluster = 30,
+  k = 2,
+  noise_dims = 0,
+  seed = 1
+)
+methods <- list(
+  ipca_qm = ipca_qm(sim, id_col = "Group", m = 3, dims = 2),
+  ipca_cr = ipca_cr(sim, id_col = "Group", dims = 2)
+)
+lcmc <- compute_lcmc_tables(sim, methods, k_range = 1:3)
+plot_lcmc_grid(lcmc)
 }

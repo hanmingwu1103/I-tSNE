@@ -17,27 +17,44 @@ itsne_vm(
 )
 }
 \arguments{
-\item{interval_data}{A data frame with paired interval columns.}
+\item{interval_data}{A data frame with paired interval columns ending in
+\verb{_Lower} and \verb{_Upper}.}
 
-\item{id_col}{Identifier or grouping column.}
+\item{id_col}{Optional identifier or grouping column preserved in the output.}
 
 \item{dims}{Number of reduced dimensions.}
 
-\item{perplexity}{t-SNE perplexity.}
+\item{perplexity}{t-SNE perplexity applied to the expanded point cloud.}
 
-\item{theta}{Barnes-Hut approximation parameter.}
+\item{theta}{Barnes-Hut approximation parameter passed to \code{\link[Rtsne:Rtsne]{Rtsne::Rtsne()}}.}
 
-\item{normalize}{Whether to normalize the expanded point cloud.}
+\item{normalize}{Whether to normalize the expanded point cloud before fitting
+t-SNE.}
 
 \item{max_iter}{Number of optimization iterations.}
 
-\item{eta}{Learning rate.}
+\item{eta}{Learning rate passed to t-SNE.}
 
 \item{seed}{Random seed.}
 }
 \value{
-A reduced-space interval data frame.
+A reduced-space interval data frame with one row per input observation.
 }
 \description{
-I-tSNE with vertex expansion
+Embed interval-valued observations by expanding each interval to its full set of
+vertices, applying t-SNE to the resulting point cloud, and reconstructing a
+reduced-space interval from the coordinatewise minima and maxima of the
+embedded vertices.
+}
+\examples{
+if (interactive()) {
+  sim <- simulate_direct_intervals(
+    cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+    n_per_cluster = 4,
+    noise_dims = 0,
+    seed = 1
+  )
+  fit <- itsne_vm(sim, id_col = "Group", perplexity = 5, max_iter = 250, eta = 100)
+  head(fit)
+}
 }

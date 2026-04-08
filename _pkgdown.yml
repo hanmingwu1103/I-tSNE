@@ -1,0 +1,43 @@
+template:
+  bootstrap: 5
+
+home:
+  title: I-tSNE
+  description: Interval-valued extensions of t-SNE and supporting analysis tools.
+
+reference:
+  - title: I-tSNE methods
+    contents:
+      - itsne_vm
+      - itsne_qm
+      - itsne_mm
+      - itsne_cr
+
+  - title: Baseline methods
+    contents:
+      - ipca_vm
+      - ipca_qm
+      - ipca_cr
+      - imds_box
+
+  - title: Evaluation and plotting
+    contents:
+      - standardize_interval_data
+      - interval_distance_matrix
+      - compute_lcmc_tables
+      - plot_interval_projection
+      - plot_interval_method_grid
+      - plot_lcmc_grid
+
+  - title: Simulation and analysis workflows
+    contents:
+      - simulate_point_aggregation
+      - simulate_direct_intervals
+      - run_simulation_studies
+      - run_real_data_analysis
+
+articles:
+  - title: Get started
+    navbar: Get started
+    contents:
+      - itsne

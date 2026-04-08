@@ -1,10 +1,23 @@
 #' IPCA with vertex expansion
 #'
-#' @param interval_data A data frame with paired interval columns.
-#' @param id_col Identifier or grouping column.
+#' Compute an interval principal component analysis embedding by expanding each
+#' interval to its vertices, performing a weighted PCA on the expanded cloud, and
+#' reconstructing reduced-space intervals from the projected vertices.
+#'
+#' @param interval_data A data frame with paired interval columns ending in
+#'   `_Lower` and `_Upper`.
+#' @param id_col Optional identifier or grouping column preserved in the output.
 #' @param dims Number of reduced dimensions.
 #'
-#' @return A reduced-space interval data frame.
+#' @return A reduced-space interval data frame with one row per input observation.
+#'
+#' @examples
+#' face_path <- system.file("extdata", "facedata.csv", package = "itsne")
+#' face_raw <- readr::read_csv(face_path, show_col_types = FALSE)
+#' face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
+#' face_std <- standardize_interval_data(face_data, id_col = "species", method = 1)
+#' fit <- ipca_vm(face_std, id_col = "species", dims = 2)
+#' head(fit)
 #' @export
 ipca_vm <- function(interval_data, id_col = NULL, dims = 2) {
   parsed <- validate_interval_data(interval_data, id_col = id_col)
@@ -45,12 +58,25 @@ ipca_vm <- function(interval_data, id_col = NULL, dims = 2) {
 
 #' IPCA with quantile expansion
 #'
-#' @param interval_data A data frame with paired interval columns.
-#' @param id_col Identifier or grouping column.
-#' @param m Number of quantile segments.
+#' Compute an interval principal component analysis embedding by approximating
+#' each interval with evenly spaced representative points and reconstructing
+#' reduced-space intervals from the projected representatives.
+#'
+#' @param interval_data A data frame with paired interval columns ending in
+#'   `_Lower` and `_Upper`.
+#' @param id_col Optional identifier or grouping column preserved in the output.
+#' @param m Number of quantile segments used to discretize each interval.
 #' @param dims Number of reduced dimensions.
 #'
-#' @return A reduced-space interval data frame.
+#' @return A reduced-space interval data frame with one row per input observation.
+#'
+#' @examples
+#' face_path <- system.file("extdata", "facedata.csv", package = "itsne")
+#' face_raw <- readr::read_csv(face_path, show_col_types = FALSE)
+#' face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
+#' face_std <- standardize_interval_data(face_data, id_col = "species", method = 1)
+#' fit <- ipca_qm(face_std, id_col = "species", m = 5, dims = 2)
+#' head(fit)
 #' @export
 ipca_qm <- function(interval_data, id_col = NULL, m = 4, dims = 2) {
   parsed <- validate_interval_data(interval_data, id_col = id_col)
@@ -82,12 +108,25 @@ ipca_qm <- function(interval_data, id_col = NULL, m = 4, dims = 2) {
 
 #' IPCA with center-radius decomposition
 #'
-#' @param interval_data A data frame with paired interval columns.
-#' @param id_col Identifier or grouping column.
+#' Compute an interval principal component analysis embedding from midpoint and
+#' radius components, then reconstruct reduced-space intervals by combining the
+#' projected midpoint and radius scores.
+#'
+#' @param interval_data A data frame with paired interval columns ending in
+#'   `_Lower` and `_Upper`.
+#' @param id_col Optional identifier or grouping column preserved in the output.
 #' @param dims Number of reduced dimensions.
 #' @param eps Small positive constant used for numerical stability.
 #'
-#' @return A reduced-space interval data frame.
+#' @return A reduced-space interval data frame with one row per input observation.
+#'
+#' @examples
+#' face_path <- system.file("extdata", "facedata.csv", package = "itsne")
+#' face_raw <- readr::read_csv(face_path, show_col_types = FALSE)
+#' face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
+#' face_std <- standardize_interval_data(face_data, id_col = "species", method = 1)
+#' fit <- ipca_cr(face_std, id_col = "species", dims = 2)
+#' head(fit)
 #' @export
 ipca_cr <- function(interval_data, id_col = NULL, dims = 2, eps = 1e-12) {
   parsed <- validate_interval_data(interval_data, id_col = id_col)
@@ -134,12 +173,25 @@ ipca_cr <- function(interval_data, id_col = NULL, dims = 2, eps = 1e-12) {
 
 #' Interval multidimensional scaling
 #'
-#' @param interval_data A data frame with paired interval columns.
-#' @param id_col Identifier or grouping column.
+#' Fit the IMDS baseline for interval-valued data through the `IMDS` routine in
+#' the optional `mdsOpt` package and return the resulting box representation as a
+#' reduced-space interval data frame.
+#'
+#' @param interval_data A data frame with paired interval columns ending in
+#'   `_Lower` and `_Upper`.
+#' @param id_col Optional identifier or grouping column preserved in the output.
 #' @param dims Number of reduced dimensions.
 #' @param seed Random seed.
 #'
-#' @return A reduced-space interval data frame.
+#' @return A reduced-space interval data frame with one row per input observation.
+#'
+#' @examplesIf requireNamespace("mdsOpt", quietly = TRUE)
+#' face_path <- system.file("extdata", "facedata.csv", package = "itsne")
+#' face_raw <- readr::read_csv(face_path, show_col_types = FALSE)
+#' face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
+#' face_std <- standardize_interval_data(face_data, id_col = "species", method = 1)
+#' fit <- imds_box(face_std, id_col = "species", dims = 2)
+#' head(fit)
 #' @export
 imds_box <- function(interval_data, id_col = NULL, dims = 2, seed = 12345) {
   require_optional_package("mdsOpt", "imds_box")

@@ -25,21 +25,24 @@ itsne_mm(
 )
 }
 \arguments{
-\item{interval_data}{A data frame with paired interval columns.}
+\item{interval_data}{A data frame with paired interval columns ending in
+\verb{_Lower} and \verb{_Upper}.}
 
-\item{id_col}{Identifier or grouping column.}
+\item{id_col}{Optional identifier or grouping column preserved in the output.}
 
 \item{dims}{Number of reduced dimensions.}
 
 \item{perplexity}{t-SNE perplexity for both endpoint channels.}
 
-\item{alpha}{The MM mixing weight.}
+\item{alpha}{MM mixing weight controlling the relative contribution of the
+lower-endpoint and upper-endpoint losses.}
 
-\item{learning_rate}{Learning rate.}
+\item{learning_rate}{Gradient-descent learning rate.}
 
 \item{max_iter}{Number of optimization iterations.}
 
-\item{initial_P_gain}{Early exaggeration multiplier for the MM probability matrices.}
+\item{initial_P_gain}{Early-exaggeration multiplier applied to the MM
+probability matrices.}
 
 \item{momentum}{Initial momentum.}
 
@@ -47,11 +50,11 @@ itsne_mm(
 
 \item{mom_switch_iter}{Iteration at which to switch the momentum.}
 
-\item{penalty_lambda}{The MM penalty weight.}
+\item{penalty_lambda}{MM penalty weight used to discourage endpoint inversion.}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Whether to print progress.}
+\item{verbose}{Whether to print progress information.}
 
 \item{init_a}{Optional initial lower-endpoint matrix.}
 
@@ -60,8 +63,23 @@ itsne_mm(
 \item{init_gap}{Default positive gap used when only \code{init_a} is supplied.}
 }
 \value{
-A list with \code{embedding} and \code{loss_history}.
+A list with two components: \code{embedding}, the reduced-space interval
+data frame, and \code{loss_history}, the objective value at each iteration.
 }
 \description{
-I-tSNE with endpoint optimization and penalty control
+Fit the direct endpoint-based I-tSNE(MM) formulation by optimizing reduced-space
+lower and upper endpoints under a t-SNE objective augmented with a soft penalty
+that discourages endpoint inversion.
+}
+\examples{
+if (interactive()) {
+  sim <- simulate_direct_intervals(
+    cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+    n_per_cluster = 4,
+    noise_dims = 0,
+    seed = 1
+  )
+  fit <- itsne_mm(sim, id_col = "Group", perplexity = 3, max_iter = 200, verbose = FALSE)
+  head(fit$embedding)
+}
 }

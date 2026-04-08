@@ -16,7 +16,10 @@ interval_plot_limits <- function(data, pad = 0.05) {
 
 #' Plot reduced-space interval rectangles
 #'
-#' @param data A reduced-space interval data frame.
+#' Create a two-dimensional rectangle plot for reduced-space interval outputs.
+#'
+#' @param data A reduced-space interval data frame containing a `Group` column and
+#'   the interval bounds for the first two reduced dimensions.
 #' @param title Plot title.
 #' @param xlab X-axis label.
 #' @param ylab Y-axis label.
@@ -24,6 +27,14 @@ interval_plot_limits <- function(data, pad = 0.05) {
 #' @param palette Color palette strategy.
 #'
 #' @return A ggplot object.
+#'
+#' @examples
+#' face_path <- system.file("extdata", "facedata.csv", package = "itsne")
+#' face_raw <- readr::read_csv(face_path, show_col_types = FALSE)
+#' face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
+#' face_std <- standardize_interval_data(face_data, id_col = "species", method = 1)
+#' fit <- ipca_qm(face_std, id_col = "species", m = 5, dims = 2)
+#' plot_interval_projection(fit, title = "Face data: IPCA(QM)")
 #' @export
 plot_interval_projection <- function(
     data,
@@ -76,14 +87,28 @@ plot_interval_projection <- function(
 
 #' Plot a multi-method interval comparison grid
 #'
+#' Arrange several reduced-space interval plots into a shared comparison grid.
+#'
 #' @param methods A named list of reduced-space interval data frames.
 #' @param titles Optional character vector of panel titles.
-#' @param ncol Number of columns.
-#' @param shared_limits Whether to use a common square plotting region.
-#' @param pad Plot-padding multiplier.
-#' @param legend_position Legend position.
+#' @param ncol Number of columns in the patchwork layout.
+#' @param shared_limits Whether to use a common square plotting region across all
+#'   panels.
+#' @param pad Plot-padding multiplier used to enlarge the plotting window.
+#' @param legend_position Legend position passed to the combined patchwork object.
 #'
 #' @return A patchwork object.
+#'
+#' @examples
+#' face_path <- system.file("extdata", "facedata.csv", package = "itsne")
+#' face_raw <- readr::read_csv(face_path, show_col_types = FALSE)
+#' face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
+#' face_std <- standardize_interval_data(face_data, id_col = "species", method = 1)
+#' methods <- list(
+#'   ipca_qm = ipca_qm(face_std, id_col = "species", m = 5, dims = 2),
+#'   ipca_cr = ipca_cr(face_std, id_col = "species", dims = 2)
+#' )
+#' plot_interval_method_grid(methods, ncol = 2)
 #' @export
 plot_interval_method_grid <- function(
     methods,

@@ -27,6 +27,11 @@ Imports:
     Rtsne,
     scales
 Suggests:
+    knitr,
     mdsOpt,
+    pkgdown,
+    rmarkdown,
     testthat (>= 3.0.0)
+VignetteBuilder: knitr
 Config/testthat/edition: 3
+Config/Needs/website: pkgdown

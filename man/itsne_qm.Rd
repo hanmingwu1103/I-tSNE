@@ -17,27 +17,43 @@ itsne_qm(
 )
 }
 \arguments{
-\item{interval_data}{A data frame with paired interval columns.}
+\item{interval_data}{A data frame with paired interval columns ending in
+\verb{_Lower} and \verb{_Upper}.}
 
-\item{id_col}{Identifier or grouping column.}
+\item{id_col}{Optional identifier or grouping column preserved in the output.}
 
-\item{m}{Number of quantile segments.}
+\item{m}{Number of quantile segments used to discretize each interval.}
 
 \item{dims}{Number of reduced dimensions.}
 
-\item{theta}{Barnes-Hut approximation parameter.}
+\item{theta}{Barnes-Hut approximation parameter passed to \code{\link[Rtsne:Rtsne]{Rtsne::Rtsne()}}.}
 
-\item{perplexity}{t-SNE perplexity.}
+\item{perplexity}{t-SNE perplexity applied to the expanded point cloud.}
 
-\item{eta}{Learning rate.}
+\item{eta}{Learning rate passed to t-SNE.}
 
 \item{max_iter}{Number of optimization iterations.}
 
 \item{seed}{Random seed.}
 }
 \value{
-A reduced-space interval data frame.
+A reduced-space interval data frame with one row per input observation.
 }
 \description{
-I-tSNE with quantile expansion
+Embed interval-valued observations by replacing each interval with a finite set
+of equally spaced representative points, fitting t-SNE to the expanded point
+cloud, and reconstructing a reduced-space interval from the embedded
+representatives.
+}
+\examples{
+if (interactive()) {
+  sim <- simulate_direct_intervals(
+    cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+    n_per_cluster = 4,
+    noise_dims = 0,
+    seed = 1
+  )
+  fit <- itsne_qm(sim, id_col = "Group", m = 4, perplexity = 10, max_iter = 250, eta = 100)
+  head(fit)
+}
 }

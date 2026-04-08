@@ -30,21 +30,23 @@ itsne_cr(
 )
 }
 \arguments{
-\item{interval_data}{A data frame with paired interval columns.}
+\item{interval_data}{A data frame with paired interval columns ending in
+\verb{_Lower} and \verb{_Upper}.}
 
-\item{id_col}{Identifier or grouping column.}
+\item{id_col}{Optional identifier or grouping column preserved in the output.}
 
 \item{dims}{Number of reduced dimensions.}
 
 \item{perplexity}{t-SNE perplexity.}
 
-\item{lambda}{The CR Wasserstein weight.}
+\item{lambda}{CR Wasserstein weight controlling the contribution of radius
+differences in the reduced-space distance.}
 
 \item{eta}{Learning rate.}
 
 \item{max_iter}{Number of optimization iterations.}
 
-\item{EE}{Early exaggeration multiplier.}
+\item{EE}{Early-exaggeration multiplier.}
 
 \item{T_EE}{Number of early-exaggeration iterations.}
 
@@ -54,15 +56,16 @@ itsne_cr(
 
 \item{mom_switch_iter}{Iteration at which to switch momentum.}
 
-\item{tol}{Binary-search tolerance in the CR probability construction.}
+\item{tol}{Binary-search tolerance used in the CR probability construction.}
 
 \item{beta_max_iter}{Maximum number of binary-search iterations.}
 
-\item{alpha}{The CR softplus scale.}
+\item{alpha}{CR softplus scale used to map unconstrained parameters to positive
+radii.}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Whether to print progress.}
+\item{verbose}{Whether to print progress information.}
 
 \item{init_C}{Optional initial center matrix.}
 
@@ -75,8 +78,23 @@ itsne_cr(
 \item{init_inc_S}{Optional initial unconstrained-radius increments.}
 }
 \value{
-A list with \code{embedding} and \code{loss_history}.
+A list with two components: \code{embedding}, the reduced-space interval
+data frame, and \code{loss_history}, the objective value at each iteration.
 }
 \description{
-I-tSNE with center-radius optimization
+Fit the direct center-radius I-tSNE(CR) formulation by modeling each interval
+through reduced-space centers and radii and optimizing a t-SNE objective built
+from a Wasserstein-style interval distance.
+}
+\examples{
+if (interactive()) {
+  sim <- simulate_direct_intervals(
+    cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+    n_per_cluster = 4,
+    noise_dims = 0,
+    seed = 1
+  )
+  fit <- itsne_cr(sim, id_col = "Group", perplexity = 3, max_iter = 200, verbose = FALSE)
+  head(fit$embedding)
+}
 }

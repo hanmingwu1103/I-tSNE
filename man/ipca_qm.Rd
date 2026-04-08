@@ -7,17 +7,28 @@
 ipca_qm(interval_data, id_col = NULL, m = 4, dims = 2)
 }
 \arguments{
-\item{interval_data}{A data frame with paired interval columns.}
+\item{interval_data}{A data frame with paired interval columns ending in
+\verb{_Lower} and \verb{_Upper}.}
 
-\item{id_col}{Identifier or grouping column.}
+\item{id_col}{Optional identifier or grouping column preserved in the output.}
 
-\item{m}{Number of quantile segments.}
+\item{m}{Number of quantile segments used to discretize each interval.}
 
 \item{dims}{Number of reduced dimensions.}
 }
 \value{
-A reduced-space interval data frame.
+A reduced-space interval data frame with one row per input observation.
 }
 \description{
-IPCA with quantile expansion
+Compute an interval principal component analysis embedding by approximating
+each interval with evenly spaced representative points and reconstructing
+reduced-space intervals from the projected representatives.
+}
+\examples{
+face_path <- system.file("extdata", "facedata.csv", package = "itsne")
+face_raw <- readr::read_csv(face_path, show_col_types = FALSE)
+face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
+face_std <- standardize_interval_data(face_data, id_col = "species", method = 1)
+fit <- ipca_qm(face_std, id_col = "species", m = 5, dims = 2)
+head(fit)
 }

@@ -18,17 +18,29 @@ plot_interval_method_grid(
 
 \item{titles}{Optional character vector of panel titles.}
 
-\item{ncol}{Number of columns.}
+\item{ncol}{Number of columns in the patchwork layout.}
 
-\item{shared_limits}{Whether to use a common square plotting region.}
+\item{shared_limits}{Whether to use a common square plotting region across all
+panels.}
 
-\item{pad}{Plot-padding multiplier.}
+\item{pad}{Plot-padding multiplier used to enlarge the plotting window.}
 
-\item{legend_position}{Legend position.}
+\item{legend_position}{Legend position passed to the combined patchwork object.}
 }
 \value{
 A patchwork object.
 }
 \description{
-Plot a multi-method interval comparison grid
+Arrange several reduced-space interval plots into a shared comparison grid.
+}
+\examples{
+face_path <- system.file("extdata", "facedata.csv", package = "itsne")
+face_raw <- readr::read_csv(face_path, show_col_types = FALSE)
+face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
+face_std <- standardize_interval_data(face_data, id_col = "species", method = 1)
+methods <- list(
+  ipca_qm = ipca_qm(face_std, id_col = "species", m = 5, dims = 2),
+  ipca_cr = ipca_cr(face_std, id_col = "species", dims = 2)
+)
+plot_interval_method_grid(methods, ncol = 2)
 }
