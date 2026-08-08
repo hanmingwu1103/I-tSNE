@@ -176,3 +176,39 @@ test_that("the default workflow output directory is under tempdir()", {
   expect_true(grepl("tempdir", deparse(d1)))
   expect_true(grepl("tempdir", deparse(d2)))
 })
+
+test_that("an order-invalid embedding is excluded from LCMC, not repaired", {
+  d <- sim_small()
+  good <- itsne_cr(d, id_col = "Group", perplexity = 3, max_iter = 120,
+                   verbose = FALSE)$embedding
+
+  # Construct an embedding with one deliberately inverted coordinate.
+  bad <- good
+  bad$Dim1_Lower[1] <- bad$Dim1_Upper[1] + 1
+
+  expect_warning(
+    tabs <- compute_lcmc_tables(d, list(ok = good, inverted = bad), k_range = 1:3),
+    "excluded from the LCMC comparison"
+  )
+
+  # The valid method is still evaluated; the invalid one is absent.
+  methods_present <- unique(tabs[[1]]$Method)
+  expect_true("ok" %in% methods_present)
+  expect_false("inverted" %in% methods_present)
+
+  # And the caller's data was not modified.
+  expect_gt(bad$Dim1_Lower[1], bad$Dim1_Upper[1])
+})
+
+test_that("LCMC errors only when no method is order-valid", {
+  d <- sim_small()
+  good <- itsne_cr(d, id_col = "Group", perplexity = 3, max_iter = 120,
+                   verbose = FALSE)$embedding
+  bad <- good
+  bad$Dim1_Lower <- bad$Dim1_Upper + 1
+
+  expect_error(
+    suppressWarnings(compute_lcmc_tables(d, list(inverted = bad), k_range = 1:3)),
+    "No method produced an order-valid"
+  )
+})

@@ -32,6 +32,14 @@ Compare original-space neighborhoods with reduced-space neighborhoods for one or
 more interval embeddings using the modified Local Continuity Meta-Criterion
 (LCMC) described in the manuscript.
 }
+\details{
+Interval distances are undefined for an embedding containing an inverted
+coordinate (\code{lower > upper}), which \code{\link[=itsne_mm]{itsne_mm()}} can produce because its
+order penalty is soft. Any such method is \strong{excluded} from the comparison
+with an informative warning; the remaining methods are still evaluated and
+returned. The offending embedding is never modified, and no endpoint repair
+of any kind is applied. If no method is order-valid, an error is raised.
+}
 \examples{
 sim <- simulate_point_aggregation(
   cluster_centers = matrix(c(6, 0, -6, 0, 0, 6), ncol = 2, byrow = TRUE),

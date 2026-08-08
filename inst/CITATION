@@ -5,7 +5,7 @@ bibentry(
   title    = "{itsne}: Interval t-SNE for Interval-Valued Data",
   author   = person("Han-Ming", "Wu"),
   year     = "2026",
-  note     = "R package version 0.2.0",
+  note     = "R package version 0.2.1",
   url      = "https://github.com/hanmingwu1103/I-tSNE"
 )
 

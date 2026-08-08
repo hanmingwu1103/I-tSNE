@@ -1,6 +1,29 @@
+# itsne 0.2.1
+
+Bug-fix release. 0.2.0 was published on GitHub but never submitted to CRAN;
+0.2.1 supersedes it and is the version intended for CRAN.
+
+## Bug fixes
+
+* `compute_lcmc_tables()` no longer aborts when a reduced-space embedding
+  contains an inverted coordinate. Interval distances are undefined for such an
+  embedding, which `itsne_mm()` can produce because its order penalty is soft.
+  The affected method is now **excluded** from the comparison with an
+  informative warning naming the method and the number of violating
+  coordinates, and the remaining methods are still evaluated and returned. An
+  error is raised only when no method is order-valid.
+
+  This fixes `run_simulation_studies()`, which previously failed outright on
+  three of its eight default scenarios (`point_high_noise`,
+  `direct_high_noise`, `direct_low_noise`). It now completes all eight.
+
+  **No endpoint repair was introduced.** The offending embedding is returned
+  unmodified; the method is excluded rather than corrected. All previously
+  valid results are numerically unchanged.
+
 # itsne 0.2.0
 
-First CRAN-targeted release.
+First CRAN-targeted release. Published on GitHub; not submitted to CRAN.
 
 ## Breaking changes
 

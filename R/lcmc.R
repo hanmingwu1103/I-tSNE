@@ -138,6 +138,14 @@ extract_reduced_interval_bounds <- function(low_df) {
 #'
 #' @return A named list of data frames, with one entry per interval distance.
 #'
+#' @details
+#' Interval distances are undefined for an embedding containing an inverted
+#' coordinate (`lower > upper`), which [itsne_mm()] can produce because its
+#' order penalty is soft. Any such method is **excluded** from the comparison
+#' with an informative warning; the remaining methods are still evaluated and
+#' returned. The offending embedding is never modified, and no endpoint repair
+#' of any kind is applied. If no method is order-valid, an error is raised.
+#'
 #' @examples
 #' sim <- simulate_point_aggregation(
 #'   cluster_centers = matrix(c(6, 0, -6, 0, 0, 6), ncol = 2, byrow = TRUE),
@@ -176,11 +184,48 @@ compute_lcmc_tables <- function(
   output <- vector("list", length(metrics))
   names(output) <- names(metrics)
 
+  # An interval distance is undefined when an embedding contains an inverted
+  # coordinate (lower > upper), which I-tSNE(MM) can produce because its order
+  # penalty is soft. Such a method is EXCLUDED from the comparison with a
+  # warning rather than repaired, and rather than aborting the whole run.
+  order_valid <- vapply(names(methods_list), function(method_name) {
+    reduced_df <- extract_reduced_interval_bounds(methods_list[[method_name]])
+    lower <- as.matrix(reduced_df[, c("Dim1_Lower", "Dim2_Lower"), drop = FALSE])
+    upper <- as.matrix(reduced_df[, c("Dim1_Upper", "Dim2_Upper"), drop = FALSE])
+    n_bad <- sum(lower > upper, na.rm = TRUE)
+    if (n_bad > 0L) {
+      warning(
+        sprintf(
+          paste0(
+            "Method '%s' is excluded from the LCMC comparison: %d of %d ",
+            "reduced-space coordinates violate lower <= upper, so interval ",
+            "distances are undefined. The embedding is returned unmodified; no ",
+            "endpoint repair is applied. Consider a larger penalty weight or ",
+            "itsne_cr(), whose radii are positive by construction."
+          ),
+          method_name, n_bad, length(lower)
+        ),
+        call. = FALSE
+      )
+      return(FALSE)
+    }
+    TRUE
+  }, logical(1))
+
+  usable <- names(methods_list)[order_valid]
+  if (!length(usable)) {
+    stop(
+      "No method produced an order-valid reduced-space embedding, so no LCMC ",
+      "comparison can be computed.",
+      call. = FALSE
+    )
+  }
+
   for (metric_name in names(metrics)) {
     metric <- metrics[[metric_name]]
     high_orders <- neighbor_orders(interval_distance_matrix(high_data, metric = metric, gamma = gamma, lambda = lambda))
 
-    metric_rows <- lapply(names(methods_list), function(method_name) {
+    metric_rows <- lapply(usable, function(method_name) {
       reduced_df <- extract_reduced_interval_bounds(methods_list[[method_name]])
       low_orders <- neighbor_orders(interval_distance_matrix(reduced_df, metric = metric, gamma = gamma, lambda = lambda))
       lcmc_values <- vapply(k_range, function(k) lcmc_from_orders(high_orders, low_orders, k), numeric(1))

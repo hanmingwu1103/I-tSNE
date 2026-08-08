@@ -35,7 +35,7 @@ From GitHub, pinned to a release:
 
 ```r
 install.packages("remotes")
-remotes::install_github("hanmingwu1103/I-tSNE@v0.2.0")
+remotes::install_github("hanmingwu1103/I-tSNE@v0.2.1")
 ```
 
 Or the current development state:
