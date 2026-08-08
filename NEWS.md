@@ -21,6 +21,11 @@ Bug-fix release. 0.2.0 was published on GitHub but never submitted to CRAN;
   unmodified; the method is excluded rather than corrected. All previously
   valid results are numerically unchanged.
 
+* `itsne_mm()` now accepts `init_a` and `init_b`. The shape check compared an
+  integer `dim()` against a double `c(n, dims)` with `identical()`, so it never
+  matched and both arguments were unusable. Supplying a correctly shaped matrix
+  now works; supplying a wrong shape still errors.
+
 # itsne 0.2.0
 
 First CRAN-targeted release. Published on GitHub; not submitted to CRAN.

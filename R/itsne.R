@@ -255,18 +255,26 @@ itsne_mm <- function(
 ) {
   parsed <- validate_interval_data(interval_data, id_col = id_col)
   n <- nrow(parsed$lower)
-  d <- dims
+  d <- as.integer(dims)
   set.seed(seed)
+
+  # Compare dimensions numerically. `dim()` returns integers while `c(n, dims)`
+  # is a double when `dims` is supplied as a double (the default), so
+  # identical() would never match and init_a/init_b could never be used.
+  has_shape <- function(x, rows, cols) {
+    dx <- dim(x)
+    length(dx) == 2L && dx[1L] == rows && dx[2L] == cols
+  }
 
   if (!is.null(init_a)) {
     init_a <- as.matrix(init_a)
-    if (!identical(dim(init_a), c(n, d))) {
+    if (!has_shape(init_a, n, d)) {
       stop("`init_a` must have shape n x dims.", call. = FALSE)
     }
     a_prime <- init_a
     if (!is.null(init_b)) {
       init_b <- as.matrix(init_b)
-      if (!identical(dim(init_b), c(n, d))) {
+      if (!has_shape(init_b, n, d)) {
         stop("`init_b` must have shape n x dims.", call. = FALSE)
       }
       b_prime <- init_b
