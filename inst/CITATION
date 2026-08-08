@@ -1,0 +1,31 @@
+citHeader("To cite the itsne package in publications, use:")
+
+bibentry(
+  bibtype  = "Manual",
+  title    = "{itsne}: Interval t-SNE for Interval-Valued Data",
+  author   = person("Han-Ming", "Wu"),
+  year     = "2026",
+  note     = "R package version 0.2.0",
+  url      = "https://github.com/hanmingwu1103/I-tSNE"
+)
+
+bibentry(
+  bibtype  = "Unpublished",
+  title    = paste("I-tSNE: extending t-SNE for nonlinear dimensionality",
+                   "reduction and visualization of interval-valued data"),
+  author   = c(person("Wen-Hua", "Wu"), person("Han-Ming", "Wu")),
+  year     = "2026",
+  note     = "Manuscript under review at Statistical Analysis and Data Mining",
+  textVersion = paste(
+    "Wu, W.-H. and Wu, H.-M. (2026).",
+    "I-tSNE: extending t-SNE for nonlinear dimensionality reduction and",
+    "visualization of interval-valued data.",
+    "Manuscript under review at Statistical Analysis and Data Mining."
+  )
+)
+
+citFooter(
+  "The second reference describes the methods implemented here. It has no DOI ",
+  "yet because it is still under review; please check for an updated citation ",
+  "before relying on it."
+)

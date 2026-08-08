@@ -193,20 +193,46 @@ itsne_qm <- function(
 #' @param init_b Optional initial upper-endpoint matrix.
 #' @param init_gap Default positive gap used when only `init_a` is supplied.
 #'
-#' @return A list with two components: `embedding`, the reduced-space interval
-#'   data frame, and `loss_history`, the objective value at each iteration.
+#' @return A list with three components:
+#'   \describe{
+#'     \item{`embedding`}{The reduced-space interval data frame, one row per
+#'       input observation, with `DimL_Lower`, `DimL_Upper`, and `DimL` columns
+#'       for each reduced dimension `L`.}
+#'     \item{`loss_history`}{Numeric vector of the objective value at each
+#'       iteration.}
+#'     \item{`violation_summary`}{A report-only diagnostic list describing
+#'       endpoint-order violations in `embedding`, with elements
+#'       `n_violations`, `n_coordinates`, `prop_violations`,
+#'       `n_objects_violating`, `max_violation`, and `repaired` (always
+#'       `FALSE`).}
+#'   }
+#'
+#' @details
+#' The order penalty is soft, so for any finite `penalty_lambda` a local
+#' numerical solution is not guaranteed to satisfy \eqn{a'_{il} \le b'_{il}}.
+#' After optimization the returned endpoints are checked and any violations are
+#' reported through `violation_summary`, and a warning is emitted when at least
+#' one violation is present. **The endpoints are never modified.** No
+#' reordering, swapping, sorting, clipping, coordinatewise hull, or
+#' `pmin()`/`pmax()` repair is applied, so `embedding` always contains the raw
+#' optimizer output. Users who require order-valid intervals should raise
+#' `penalty_lambda`, refit, or select a different variant such as [itsne_cr()],
+#' which guarantees positive radii by construction.
 #'
 #' @examples
-#' if (interactive()) {
-#'   sim <- simulate_direct_intervals(
-#'     cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
-#'     n_per_cluster = 4,
-#'     noise_dims = 0,
-#'     seed = 1
-#'   )
-#'   fit <- itsne_mm(sim, id_col = "Group", perplexity = 3, max_iter = 200, verbose = FALSE)
-#'   head(fit$embedding)
-#' }
+#' sim <- simulate_direct_intervals(
+#'   cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+#'   n_per_cluster = 4,
+#'   noise_dims = 0,
+#'   seed = 1
+#' )
+#' fit <- itsne_mm(sim, id_col = "Group", perplexity = 3, max_iter = 200, verbose = FALSE)
+#' head(fit$embedding)
+#'
+#' # Always inspect the post-fit endpoint-order diagnostic.
+#' fit$violation_summary$n_violations
+#' fit$violation_summary$max_violation
+#' fit$violation_summary$repaired  # FALSE: endpoints are never repaired
 #' @export
 itsne_mm <- function(
     interval_data,
@@ -331,9 +357,38 @@ itsne_mm <- function(
     }
   }
 
+  # Post-fit endpoint-order diagnostic. The MM order penalty is soft, so a
+  # finite penalty weight does not guarantee a'_il <= b'_il at a local
+  # numerical solution. This block only reports; it never modifies a_prime or
+  # b_prime, so `embedding` is bit-for-bit identical to previous versions.
+  viol_mat <- (a_prime > b_prime)
+  n_violations <- sum(viol_mat)
+  violation_summary <- list(
+    n_violations = n_violations,
+    n_coordinates = length(viol_mat),
+    prop_violations = n_violations / length(viol_mat),
+    n_objects_violating = sum(rowSums(viol_mat) > 0),
+    max_violation = if (n_violations > 0) max(a_prime[viol_mat] - b_prime[viol_mat]) else 0,
+    repaired = FALSE
+  )
+  if (n_violations > 0) {
+    warning(
+      sprintf(
+        paste0(
+          "itsne_mm: %d of %d reduced-space endpoint coordinates violate ",
+          "lower <= upper (largest violation %.6g). The order penalty is soft; ",
+          "no repair has been applied. See $violation_summary."
+        ),
+        n_violations, length(viol_mat), violation_summary$max_violation
+      ),
+      call. = FALSE
+    )
+  }
+
   list(
     embedding = build_interval_embedding(parsed$ids, a_prime, b_prime),
-    loss_history = loss_history
+    loss_history = loss_history,
+    violation_summary = violation_summary
   )
 }
 

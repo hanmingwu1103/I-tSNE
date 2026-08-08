@@ -1,3 +1,14 @@
+## NOTE (added for the public release):
+## Absolute paths that pointed at a personal OneDrive folder have been replaced
+## by the placeholder variable `LEGACY_DATA_DIR` below. Set it to a directory
+## containing the input files before running anything in this script.
+##
+## This file is retained for historical reference only. It is NOT part of the
+## supported `itsne` package, is excluded from the CRAN tarball, and is not
+## covered by the package tests. Use the exported package functions instead.
+
+LEGACY_DATA_DIR <- Sys.getenv("ITSNE_LEGACY_DATA_DIR", unset = ".")
+
 library(Rtsne)
 library(ggplot2)
 library(dplyr)
@@ -69,7 +80,7 @@ plot_interval_projection <- function(data,
 
 ####facedata####
 set.seed(12345)
-facedata <- read.csv("C:/Users/may/OneDrive - National ChengChi University/meeting/data/facedata.csv",
+facedata <- read.csv(file.path(LEGACY_DATA_DIR, "facedata.csv"),
                      fileEncoding = "UTF-8", stringsAsFactors = FALSE)
 
 interval_df <- facedata[, c("species",
@@ -117,7 +128,7 @@ plot_interval_pca_tsne_grid(
   qm_tsne = qm_tsne,
   cr1_tsne_embedding = cr1_tsne$embedding,
   lU2_tsne_embedding = lU2_tsne$embedding,
-  out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+  out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
   out_file = "facedata.pdf"   # 你指定英文檔名
 )
 
@@ -146,7 +157,7 @@ name_map <- c(
   vm_tsne  = "I-tSNE(VM)"
 )
 plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df,
-              out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+              out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
               out_file = "facedata_lcmc.pdf",width = 10,
               height = 6,
               save = TRUE,method_name_map = name_map)
@@ -156,10 +167,10 @@ plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df,
 
 ####digit####
 set.seed(12345)
-digit <- read.csv("C:/Users/may/OneDrive - National ChengChi University/meeting/data/digits_interval_pca.csv",
+digit <- read.csv(file.path(LEGACY_DATA_DIR, "digits_interval_pca.csv"),
                   fileEncoding = "UTF-8", stringsAsFactors = FALSE)
 
-digit <- read.csv("C:/Users/may/OneDrive - National ChengChi University/meeting/data/digits_interval.csv",
+digit <- read.csv(file.path(LEGACY_DATA_DIR, "digits_interval.csv"),
                   fileEncoding = "UTF-8", stringsAsFactors = FALSE)
 
 interval_df <- digit[, c("label",
@@ -268,7 +279,7 @@ plot_interval_pca_tsne_grid(
   qm_tsne = qm_tsne,
   cr1_tsne_embedding = cr1_tsne$embedding,
   lU2_tsne_embedding = lU2_tsne$embedding,
-  out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+  out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
   out_file = "digit.pdf"   # 你指定英文檔名
 )
 
@@ -296,7 +307,7 @@ name_map <- c(
   lu2_tsne = "I-tSNE(MM)"
 )
 plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df,
-              out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+              out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
               out_file = "diigit_lcmc.pdf",width = 10,
               height = 6,
               save = TRUE,method_name_map = name_map)
@@ -305,7 +316,7 @@ plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df,
 
 
 ########irisdata########
-iris<-read.csv("C:/Users/may/OneDrive - National ChengChi University/meeting/data/iris.csv",
+iris<-read.csv(file.path(LEGACY_DATA_DIR, "iris.csv"),
                fileEncoding = "UTF-8", stringsAsFactors = FALSE)
 interval_df <- iris[, c("Species",
                         grep("_(Lower|Upper)$", names(iris), value = TRUE))]
@@ -396,7 +407,7 @@ plot_interval_pca_tsne_grid(
   qm_tsne = qm_tsne,
   cr1_tsne_embedding = cr1_tsne$embedding,
   lU2_tsne_embedding = lU2_tsne$embedding,
-  out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+  out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
   out_file = "iris_simu.pdf"   # 你指定英文檔名
 )
 
@@ -425,7 +436,7 @@ name_map <- c(
   vm_tsne  = "I-tSNE(VM)"
 )
 plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df,
-              out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+              out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
               out_file = "iris_simu_lcmc.pdf",width = 10,
               height = 6,
               save = TRUE,method_name_map = name_map)
@@ -437,7 +448,7 @@ plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df,
 
 
 #######Cars#####
-car<-read.csv("C:/Users/may/OneDrive - National ChengChi University/meeting/data/Cars_data.csv",
+car<-read.csv(file.path(LEGACY_DATA_DIR, "Cars_data.csv"),
               fileEncoding = "UTF-8", stringsAsFactors = FALSE)
 interval_df <- car[, c("class",
                        grep("_(Lower|Upper)$", names(car), value = TRUE))]
@@ -531,7 +542,7 @@ plot_interval_pca_tsne_grid(
   qm_tsne = qm_tsne,
   cr1_tsne_embedding = cr1_tsne$embedding,
   lU2_tsne_embedding = lU2_tsne$embedding,
-  out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+  out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
   out_file = "car.pdf"   # 你指定英文檔名
 )
 
@@ -558,14 +569,14 @@ name_map <- c(
   vm_tsne  = "I-tSNE(VM)"
 )
 plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df,
-              out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+              out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
               out_file = "car_lcmc.pdf",width = 10,
               height = 6,
               save = TRUE,method_name_map = name_map)
 
 
 ######chinatemp####
-china<-read.csv("C:/Users/may/OneDrive - National ChengChi University/meeting/data/ChinaTemp_data.csv",
+china<-read.csv(file.path(LEGACY_DATA_DIR, "ChinaTemp_data.csv"),
                 fileEncoding = "UTF-8", stringsAsFactors = FALSE)
 interval_df <- china[, c("GeoReg",
                          grep("_(Lower|Upper)$", names(china), value = TRUE))]
@@ -659,7 +670,7 @@ plot_interval_pca_tsne_grid(
   qm_tsne = qm_tsne,
   cr1_tsne_embedding = cr1_tsne$embedding,
   lU2_tsne_embedding = lU2_tsne$embedding,
-  out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+  out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
   out_file = "chinatemp.pdf"   # 你指定英文檔名
 )
 
@@ -688,7 +699,7 @@ name_map <- c(
   vm_tsne  = "I-tSNE(VM)"
 )
 plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df,
-              out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+              out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
               out_file = "chinatemp_lcmc.pdf",width = 10,
               height = 6,
               save = TRUE,method_name_map = name_map)
@@ -707,7 +718,7 @@ plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df,
 
 
 ########mushroom#######
-mushroom<-read.csv("C:/Users/may/OneDrive - National ChengChi University/meeting/data/mushroom_data.csv",
+mushroom<-read.csv(file.path(LEGACY_DATA_DIR, "mushroom_data.csv"),
                    fileEncoding = "UTF-8", stringsAsFactors = FALSE)
 interval_df <- mushroom[, c("Edibility",
                             grep("_(Lower|Upper)$", names(mushroom), value = TRUE))]
@@ -815,7 +826,7 @@ plot_interval_pca_tsne_grid(
   qm_tsne = qm_tsne,
   cr1_tsne_embedding = cr1_tsne$embedding,
   lU2_tsne_embedding = lU2_tsne$embedding,
-  out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260126/figure",                 # 你指定資料夾
+  out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
   out_file = "mashroom.pdf"   # 你指定英文檔名
 )
 
@@ -837,7 +848,7 @@ plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df)
 
 
 ######Ablone######
-abalone<-read.csv("C:/Users/may/OneDrive - National ChengChi University/meeting/data/Abalone_data.csv",
+abalone<-read.csv(file.path(LEGACY_DATA_DIR, "Abalone_data.csv"),
               fileEncoding = "UTF-8", stringsAsFactors = FALSE)
 
 interval_df <- abalone[, c("subject",
@@ -931,7 +942,7 @@ plot_interval_pca_tsne_grid(
   qm_tsne = qm_tsne,
   cr1_tsne_embedding = cr1_tsne$embedding,
   lU2_tsne_embedding = lU2_tsne$embedding,
-  out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+  out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
   out_file = "abalone.pdf"   # 你指定英文檔名
 )
 
@@ -958,14 +969,14 @@ name_map <- c(
   vm_tsne  = "I-tSNE(VM)"
 )
 plot_lcmc_1x3(lcmc_w_df, lcmc_h_df, lcmc_m_df,
-              out_dir  = "C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure",                 # 你指定資料夾
+              out_dir  = LEGACY_DATA_DIR,                 # 你指定資料夾
               out_file = "abalone_lcmc.pdf",width = 10,
               height = 6,
               save = TRUE,method_name_map = name_map)
 
 
 ######wine######
-wine<-read.csv("C:/Users/may/OneDrive - National ChengChi University/meeting/data/wine.csv",
+wine<-read.csv(file.path(LEGACY_DATA_DIR, "wine.csv"),
                 fileEncoding = "UTF-8", stringsAsFactors = FALSE)
 interval_df <- wine[, c("Type",
                          grep("_(Lower|Upper)$", names(wine), value = TRUE))]
@@ -1038,7 +1049,7 @@ cols <- setNames(grDevices::hcl.colors(n_g, palette = "Dark 3"), all_groups)
 
 
 ##########mnist########
-mnist<-read.csv("C:/Users/may/OneDrive - National ChengChi University/meeting/data/mnist.csv",
+mnist<-read.csv(file.path(LEGACY_DATA_DIR, "mnist.csv"),
                fileEncoding = "UTF-8", stringsAsFactors = FALSE)
 
 interval_df <- mnist[, c("label",

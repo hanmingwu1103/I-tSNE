@@ -7,3 +7,16 @@
 ^cran-comments\.md$
 ^CRAN_SUBMISSION_CHECKLIST\.md$
 ^CRAN_UPLOAD_FILES_CHECKLIST\.md$
+^data-raw$
+^release-audit$
+^release$
+^reproducibility$
+^\.github$
+^\.Rproj\.user$
+^.*\.Rproj$
+^.*\.Rcheck$
+^.*\.tar\.gz$
+^.*\.zip$
+^revdep$
+^docs$
+^\.Rhistory$

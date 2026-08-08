@@ -4,10 +4,13 @@
 \alias{run_real_data_analysis}
 \title{Run the manuscript real-data analyses}
 \usage{
-run_real_data_analysis(output_dir = "results/real-data")
+run_real_data_analysis(output_dir = file.path(tempdir(), "itsne-real-data"))
 }
 \arguments{
-\item{output_dir}{Directory where results and figures will be saved.}
+\item{output_dir}{Directory where results and figures are written. Defaults to
+a session-specific subdirectory of \code{\link[=tempdir]{tempdir()}}, so the function never writes
+into the working directory unless an explicit path is supplied. The
+directory is created if it does not already exist.}
 }
 \value{
 A named list with two components, \code{face} and \code{digits}, each containing
@@ -19,8 +22,10 @@ including preprocessing, model fitting, modified-LCMC evaluation, and export of
 figures and summary tables.
 }
 \examples{
-if (interactive()) {
-  out <- run_real_data_analysis(output_dir = tempdir())
-  names(out)
+# Full Face and Digits analyses including vertex expansion; far too slow for
+# an automated check, so it is not executed here.
+\dontrun{
+out <- run_real_data_analysis(output_dir = file.path(tempdir(), "itsne-real"))
+names(out)
 }
 }

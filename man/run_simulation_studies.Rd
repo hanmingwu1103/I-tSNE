@@ -4,13 +4,20 @@
 \alias{run_simulation_studies}
 \title{Run the manuscript simulation study}
 \usage{
-run_simulation_studies(output_dir = "results/simulations", seed = 12345)
+run_simulation_studies(
+  output_dir = file.path(tempdir(), "itsne-simulations"),
+  seed = 12345
+)
 }
 \arguments{
-\item{output_dir}{Directory where results and figures will be saved.}
+\item{output_dir}{Directory where results and figures are written. Defaults to
+a session-specific subdirectory of \code{\link[=tempdir]{tempdir()}}, so the function never writes
+into the working directory unless an explicit path is supplied. The
+directory is created if it does not already exist.}
 
-\item{seed}{Random seed. Included for interface consistency; the scenario
-generators currently manage their own seeds.}
+\item{seed}{Random seed. Retained for interface consistency only: the scenario
+generators manage their own seeds, so changing this value does not alter the
+generated data.}
 }
 \value{
 A named list containing the simulated datasets, fitted method outputs,
@@ -22,8 +29,10 @@ generation, model fitting, modified-LCMC evaluation, and figure and table
 export.
 }
 \examples{
-if (interactive()) {
-  out <- run_simulation_studies(output_dir = tempdir())
-  names(out)
+# Full manuscript-scale run over eight scenarios and four methods; far too
+# slow for an automated check, so it is not executed here.
+\dontrun{
+out <- run_simulation_studies(output_dir = file.path(tempdir(), "itsne-sim"))
+names(out)
 }
 }

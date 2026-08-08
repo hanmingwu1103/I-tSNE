@@ -1,3 +1,14 @@
+## NOTE (added for the public release):
+## Absolute paths that pointed at a personal OneDrive folder have been replaced
+## by the placeholder variable `LEGACY_DATA_DIR` below. Set it to a directory
+## containing the input files before running anything in this script.
+##
+## This file is retained for historical reference only. It is NOT part of the
+## supported `itsne` package, is excluded from the CRAN tarball, and is not
+## covered by the package tests. Use the exported package functions instead.
+
+LEGACY_DATA_DIR <- Sys.getenv("ITSNE_LEGACY_DATA_DIR", unset = ".")
+
 library(mvtnorm)
 library(cluster)
 library(ggplot2)
@@ -509,7 +520,7 @@ grid.newpage()
 grid.draw(combined_plot)
 
 
-pdf("C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure/sim1.pdf", width = 10, height = 5)
+pdf(file.path(LEGACY_DATA_DIR, "sim1.pdf"), width = 10, height = 5)
 grid.newpage()
 grid.draw(combined_plot)
 dev.off()
@@ -525,7 +536,7 @@ grid.newpage()
 grid.draw(combined_plot)
 
 
-pdf("C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure/Lcmc_sim1.pdf", width = 10, height = 5)
+pdf(file.path(LEGACY_DATA_DIR, "Lcmc_sim1.pdf"), width = 10, height = 5)
 grid.newpage()
 grid.draw(combined_plot)
 dev.off()
@@ -584,7 +595,7 @@ combined_plot <- ggarrange(
 
 # 顯示圖片
 print(combined_plot)
-ggsave("C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure/simu1_2D_raw.pdf", plot = combined_plot, width = 10, height = 4.5)
+ggsave(file.path(LEGACY_DATA_DIR, "simu1_2D_raw.pdf"), plot = combined_plot, width = 10, height = 4.5)
 
 
 
@@ -1010,7 +1021,7 @@ grid.newpage()
 grid.draw(combined_plot)
 
 
-pdf("C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure/sim2.pdf", width = 10, height = 5)
+pdf(file.path(LEGACY_DATA_DIR, "sim2.pdf"), width = 10, height = 5)
 grid.newpage()
 grid.draw(combined_plot)
 dev.off()
@@ -1026,7 +1037,7 @@ grid.newpage()
 grid.draw(combined_plot)
 
 
-pdf("C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure/Lcmc_sim2.pdf", width = 10, height = 5)
+pdf(file.path(LEGACY_DATA_DIR, "Lcmc_sim2.pdf"), width = 10, height = 5)
 grid.newpage()
 grid.draw(combined_plot)
 dev.off()
@@ -1097,4 +1108,4 @@ combined_plot <- ggarrange(
 
 combined_plot
 
-ggsave("C:/Users/may/OneDrive - National ChengChi University/meeting/論文latex/中文/Interval-tSNE_Wu&Wu_20260305/figure/simu2_2D_raw.pdf", plot = combined_plot, width = 10, height = 4.5)
+ggsave(file.path(LEGACY_DATA_DIR, "simu2_2D_raw.pdf"), plot = combined_plot, width = 10, height = 4.5)

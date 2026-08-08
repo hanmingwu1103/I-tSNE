@@ -1,6 +1,11 @@
-%\VignetteIndexEntry{Getting Started with itsne}
-%\VignetteEngine{knitr::knitr}
-%\VignetteEncoding{UTF-8}
+---
+title: "Getting Started with itsne"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with itsne}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -11,20 +16,28 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Getting Started with `itsne`
+The `itsne` package implements interval-valued extensions of t-SNE together with
+baseline interval dimension-reduction methods, interval-aware LCMC evaluation
+tools, and plotting helpers.
 
-The `itsne` package implements interval-valued extensions of t-SNE together with baseline interval dimension-reduction methods, modified-LCMC evaluation tools, and plotting helpers used in the accompanying manuscript.
+An *interval-valued* observation is a hyperrectangle rather than a point: each
+variable is recorded as a `[lower, upper]` pair. Throughout the package this is
+represented by paired columns ending in `_Lower` and `_Upper`.
+
+This vignette uses small, fast examples. It is a demonstration of the package
+interface, **not** a reproduction of the manuscript analyses.
 
 ## Bundled example data
 
-The package ships with the Face dataset and two interval-valued versions of the Digits analysis data in `inst/extdata`. The example below reads the Face data and standardizes the interval variables.
+The package ships the Face dataset and two interval-valued versions of the
+Digits data in `inst/extdata`. Provenance, citations, licences, and checksums
+for all three are recorded in `inst/extdata/README.md`.
 
 ```{r}
 library(itsne)
-library(readr)
 
 face_path <- system.file("extdata", "facedata.csv", package = "itsne")
-face_raw <- read_csv(face_path, show_col_types = FALSE)
+face_raw <- utils::read.csv(face_path, check.names = FALSE)
 face_data <- face_raw[, c("species", grep("_(Lower|Upper)$", names(face_raw), value = TRUE))]
 face_std <- standardize_interval_data(face_data, id_col = "species", method = 1)
 head(face_std[, 1:5])
@@ -32,7 +45,8 @@ head(face_std[, 1:5])
 
 ## Baseline interval embeddings
 
-For a quick reduced-space representation, the baseline IPCA methods are inexpensive and well suited for exploratory use.
+The baseline interval PCA methods are inexpensive and well suited to a first
+look.
 
 ```{r}
 ipca_fit <- ipca_qm(face_std, id_col = "species", m = 5, dims = 2)
@@ -43,9 +57,11 @@ head(ipca_fit)
 plot_interval_projection(ipca_fit, title = "Face data: IPCA(QM)")
 ```
 
-## Modified-LCMC evaluation
+## The four I-tSNE variants
 
-The package also computes the modified Local Continuity Meta-Criterion (LCMC) used throughout the manuscript.
+Two variants are *expansion-based*: each interval is replaced by representative
+points, standard t-SNE is applied to the pooled cloud, and a reduced-space
+interval is reconstructed afterwards as a bounding box.
 
 ```{r}
 sim_data <- simulate_point_aggregation(
@@ -56,6 +72,49 @@ sim_data <- simulate_point_aggregation(
   seed = 1
 )
 
+qm_fit <- itsne_qm(sim_data, id_col = "Group", m = 3, perplexity = 5,
+                   max_iter = 250)
+head(qm_fit)
+```
+
+Two variants are *direct*: they optimize the reduced-space interval itself.
+`itsne_cr()` uses a center-radius parameterization that guarantees positive
+radii, so every returned interval is valid by construction.
+
+```{r}
+cr_fit <- itsne_cr(sim_data, id_col = "Group", perplexity = 5,
+                   max_iter = 250, verbose = FALSE)
+head(cr_fit$embedding)
+```
+
+### Endpoint order in `itsne_mm()`
+
+`itsne_mm()` optimizes coupled lower and upper endpoints under a **soft** order
+penalty. For any finite `penalty_lambda` this does not guarantee
+`lower <= upper` at a local numerical solution, so the fit must be checked
+afterwards. The package reports violations but **never repairs them**: no
+reordering, swapping, sorting, clipping, or coordinatewise hull is applied, and
+`embedding` always holds the raw optimizer output.
+
+```{r}
+mm_fit <- itsne_mm(sim_data, id_col = "Group", perplexity = 5,
+                   max_iter = 250, penalty_lambda = 0.2, verbose = FALSE)
+
+mm_fit$violation_summary$n_violations
+mm_fit$violation_summary$max_violation
+mm_fit$violation_summary$repaired
+```
+
+When at least one coordinate is inverted, a warning is emitted as well. If that
+happens, raise `penalty_lambda` and refit, or use `itsne_cr()` instead.
+
+## Interval-aware LCMC evaluation
+
+Neighborhood preservation is assessed with the Local Continuity Meta-Criterion,
+computed under interval-valued distances in both the original and reduced
+spaces.
+
+```{r}
 methods <- list(
   ipca_qm = ipca_qm(sim_data, id_col = "Group", m = 3, dims = 2),
   ipca_cr = ipca_cr(sim_data, id_col = "Group", dims = 2)
@@ -65,20 +124,20 @@ lcmc_tables <- compute_lcmc_tables(sim_data, methods, k_range = 1:3)
 plot_lcmc_grid(lcmc_tables)
 ```
 
-## I-tSNE methods and end-to-end workflows
+## End-to-end workflows
 
-The direct I-tSNE methods are more computationally intensive than the baseline examples shown above, so they are often better run as part of a dedicated analysis script.
+Two convenience entry points run larger analysis sequences and write figures and
+summary tables to disk. They are considerably more expensive than the examples
+above and are not run when this vignette is built.
+
+By default they write to a subdirectory of `tempdir()`; pass `output_dir` to
+choose a location. They never write into the working directory unless you ask
+them to.
 
 ```{r, eval = FALSE}
-itsne_fit <- itsne_qm(face_std, id_col = "species", m = 5, perplexity = 20)
-plot_interval_projection(itsne_fit, title = "Face data: I-tSNE(QM)")
+out <- run_simulation_studies(output_dir = file.path(tempdir(), "itsne-sim"))
+run_real_data_analysis(output_dir = file.path(tempdir(), "itsne-real"))
 ```
 
-The package includes two convenience entry points that reproduce the manuscript workflows and write figures and summary tables to disk.
-
-```{r, eval = FALSE}
-run_simulation_studies(output_dir = "results/simulations")
-run_real_data_analysis(output_dir = "results/real-data")
-```
-
-These functions are intended for reproducibility runs, while the lower-level modeling and plotting functions are usually the best interface for exploratory analysis and method development.
+These are intended for reproducibility runs; the lower-level modeling and
+plotting functions are usually the better interface for exploratory work.

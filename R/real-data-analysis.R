@@ -11,18 +11,23 @@ read_example_data <- function(filename) {
 #' including preprocessing, model fitting, modified-LCMC evaluation, and export of
 #' figures and summary tables.
 #'
-#' @param output_dir Directory where results and figures will be saved.
+#' @param output_dir Directory where results and figures are written. Defaults to
+#'   a session-specific subdirectory of [tempdir()], so the function never writes
+#'   into the working directory unless an explicit path is supplied. The
+#'   directory is created if it does not already exist.
 #'
 #' @return A named list with two components, `face` and `digits`, each containing
 #'   the prepared data, fitted method outputs, and modified-LCMC tables.
 #'
 #' @examples
-#' if (interactive()) {
-#'   out <- run_real_data_analysis(output_dir = tempdir())
-#'   names(out)
+#' # Full Face and Digits analyses including vertex expansion; far too slow for
+#' # an automated check, so it is not executed here.
+#' \dontrun{
+#' out <- run_real_data_analysis(output_dir = file.path(tempdir(), "itsne-real"))
+#' names(out)
 #' }
 #' @export
-run_real_data_analysis <- function(output_dir = "results/real-data") {
+run_real_data_analysis <- function(output_dir = file.path(tempdir(), "itsne-real-data")) {
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
   face_raw <- read_example_data("facedata.csv")

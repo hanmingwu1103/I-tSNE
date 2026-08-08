@@ -4,3 +4,7 @@
 .Rproj.user
 results/
 *.Rproj
+release/
+release-audit/
+*.Rcheck/
+*.tar.gz

@@ -10,8 +10,21 @@ The \code{itsne} package provides interval-valued extensions of t-SNE, interval
 baseline methods, plotting helpers, modified-LCMC utilities, and reproducible
 workflows for the manuscript's simulation and real-data studies.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/hanmingwu1103/I-tSNE}
+  \item Report bugs at \url{https://github.com/hanmingwu1103/I-tSNE/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Han-Ming Wu \email{hanmingwu1103@gmail.com}
+
+Authors:
+\itemize{
+  \item Han-Ming Wu \email{hanmingwu1103@gmail.com}
+}
 
 }
 \keyword{internal}

@@ -63,23 +63,49 @@ probability matrices.}
 \item{init_gap}{Default positive gap used when only \code{init_a} is supplied.}
 }
 \value{
-A list with two components: \code{embedding}, the reduced-space interval
-data frame, and \code{loss_history}, the objective value at each iteration.
+A list with three components:
+\describe{
+\item{\code{embedding}}{The reduced-space interval data frame, one row per
+input observation, with \code{DimL_Lower}, \code{DimL_Upper}, and \code{DimL} columns
+for each reduced dimension \code{L}.}
+\item{\code{loss_history}}{Numeric vector of the objective value at each
+iteration.}
+\item{\code{violation_summary}}{A report-only diagnostic list describing
+endpoint-order violations in \code{embedding}, with elements
+\code{n_violations}, \code{n_coordinates}, \code{prop_violations},
+\code{n_objects_violating}, \code{max_violation}, and \code{repaired} (always
+\code{FALSE}).}
+}
 }
 \description{
 Fit the direct endpoint-based I-tSNE(MM) formulation by optimizing reduced-space
 lower and upper endpoints under a t-SNE objective augmented with a soft penalty
 that discourages endpoint inversion.
 }
-\examples{
-if (interactive()) {
-  sim <- simulate_direct_intervals(
-    cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
-    n_per_cluster = 4,
-    noise_dims = 0,
-    seed = 1
-  )
-  fit <- itsne_mm(sim, id_col = "Group", perplexity = 3, max_iter = 200, verbose = FALSE)
-  head(fit$embedding)
+\details{
+The order penalty is soft, so for any finite \code{penalty_lambda} a local
+numerical solution is not guaranteed to satisfy \eqn{a'_{il} \le b'_{il}}.
+After optimization the returned endpoints are checked and any violations are
+reported through \code{violation_summary}, and a warning is emitted when at least
+one violation is present. \strong{The endpoints are never modified.} No
+reordering, swapping, sorting, clipping, coordinatewise hull, or
+\code{pmin()}/\code{pmax()} repair is applied, so \code{embedding} always contains the raw
+optimizer output. Users who require order-valid intervals should raise
+\code{penalty_lambda}, refit, or select a different variant such as \code{\link[=itsne_cr]{itsne_cr()}},
+which guarantees positive radii by construction.
 }
+\examples{
+sim <- simulate_direct_intervals(
+  cluster_centers = matrix(c(-2, 0, 0, 2, 2, -2), ncol = 2, byrow = TRUE),
+  n_per_cluster = 4,
+  noise_dims = 0,
+  seed = 1
+)
+fit <- itsne_mm(sim, id_col = "Group", perplexity = 3, max_iter = 200, verbose = FALSE)
+head(fit$embedding)
+
+# Always inspect the post-fit endpoint-order diagnostic.
+fit$violation_summary$n_violations
+fit$violation_summary$max_violation
+fit$violation_summary$repaired  # FALSE: endpoints are never repaired
 }
